@@ -15,6 +15,7 @@ import { situationSelector } from 'Selectors/simulationSelectors'
 import './AnswerList.css'
 import { parentName } from 'Components/publicodesUtils'
 import { sortCategories, extractCategories } from '../../sites/publicodes/chart'
+import { useEffect } from 'react'
 
 type AnswerListProps = {
 	onClose: () => void
@@ -23,8 +24,9 @@ type AnswerListProps = {
 export default function AnswerList({ onClose }: AnswerListProps) {
 	const dispatch = useDispatch()
 	const engine = useEngine()
+	const situation = useSelector(situationSelector)
 	const answeredQuestions = (Object.keys(
-		useSelector(situationSelector)
+		situation
 	) as Array<DottedName>).map((dottedName) =>
 		engine.evaluate(engine.getRule(dottedName))
 	)
@@ -34,6 +36,20 @@ export default function AnswerList({ onClose }: AnswerListProps) {
 	)
 	const rules = useSelector((state) => state.rules)
 	const categories = sortCategories(extractCategories(rules, engine))
+
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (!(e.ctrlKey && e.key === 'c')) return
+			console.log('VOILA VOTRE SITUATION')
+			console.log(JSON.stringify(situation))
+			e.preventDefault()
+			return false
+		}
+		window.addEventListener('keydown', handleKeyDown)
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown)
+		}
+	}, [situation])
 
 	return (
 		<Overlay onClose={onClose} className="answer-list">
