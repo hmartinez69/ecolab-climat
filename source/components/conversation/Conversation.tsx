@@ -72,6 +72,7 @@ export default function Conversation({
 			? nextQuestions[0]
 			: unfoldedStep || sortedQuestions[0]
 
+	console.log({ currentQuestion })
 	const currentQuestionIsAnswered = isMosaic
 		? true
 		: situation[currentQuestion] != null
